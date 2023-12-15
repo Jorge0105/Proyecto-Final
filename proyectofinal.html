@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>AgendaOnline</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #007bff; /* Blue background */
+            margin-top: 20px;
+            color: #ffffff; /* White text */
+        }
+    
+        #contenedor {
+            width: 420px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            color: #000000; /* Black text */
+        }
+    
+        #gbotones {
+            margin-bottom: 15px;
+        }
+    
+        .input-group {
+            margin-bottom: 15px;
+        }
+    
+        .btn-guardar {
+            background-color: #28a745 !important; /* Green background */
+            border-color: #28a745 !important; /* Green border */
+        }
+    
+        .btn-consultar {
+            background-color: #f06; /* Mamey background */
+            border-color: #f06; /* Mamey border */
+        }
+    
+        .btn-eliminar {
+            background-color: #dc3545 !important; /* Red background */
+            border-color: #dc3545 !important; /* Red border */
+        }
+    
+        .btn-eliminar-todo {
+            background-color: #dc3545 !important; /* Red background */
+            border-color: #dc3545 !important; /* Red border */
+        }
+    
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff; /* Blue text */
+        }
+    
+        hr {
+            border-color: #28a745; /* Green border color */
+        }
+    
+        #contactos .panel {
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+    
+        #contactos .panel-body {
+            display: flex;
+            align-items: center;
+        }
+    
+        #contactos img {
+            max-width: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+    
+        #contactos p {
+            margin: 0;
+        }
+    
+        #contactos a {
+            text-decoration: none;
+            color: #007bff; /* Blue link color */
+        }
+    
+        #contactos a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="contenedor">
+        <header>
+            <h3>Agenda Online
+            </h3>
+            <hr>
+        </header>
+
+        <form class="form-inline">
+            <div class="input-group">
+                <span class="input-group-addon">@</span>
+                <input type="text" class="form-control" placeholder="Nombre" id="nombre">
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon">+1</span>
+                <input type="text" class="form-control" placeholder="Número de teléfono" id="movil">
+            </div>
+
+            <div class="input-group">
+                <input type="email" class="form-control" placeholder="Correo electrónico" id="email">
+            </div>
+        </form>
+
+        <hr />
+
+        <div id="gbotones" class="btn-group" role="group" aria-label="...">
+            <button type="button" onclick="guardarDato()" class="btn btn-guardar">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Guardar
+            </button>
+            <button type="button" onclick="recuperarDato()" class="btn btn-consultar">
+                <span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span> Consultar
+            </button>
+            <button type="button" onclick="eliminarDato()" class="btn btn-eliminar">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar
+            </button>
+        </div>
+
+        <button type="button" onclick="eliminarTodo()" class="btn btn-eliminar-todo">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar Todos
+        </button>
+
+        <hr>
+
+        <div id="contactos">
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            actualizarDatos();
+        });
+
+        function guardarDato() {
+            var nombre = document.getElementById("nombre").value;
+            var movil = document.getElementById("movil").value;
+            var email = document.getElementById("email").value;
+
+            var avatarURL = 'http://api.adorable.io/avatars/80/' + email + '.png';
+            var datos = {
+                'movil': movil,
+                'email': email,
+                'avatarURL': avatarURL
+            };
+
+            localStorage.setItem(nombre, JSON.stringify(datos));
+
+            document.getElementById("nombre").value = "";
+            document.getElementById("movil").value = "";
+            document.getElementById("email").value = "";
+
+            actualizarDatos();
+        }
+
+        function recuperarDato() {
+            var nombre = document.getElementById("nombre").value;
+
+            var datos = localStorage.getItem(nombre);
+
+            if (datos) {
+                datos = JSON.parse(datos);
+                document.getElementById("movil").value = datos.movil;
+                document.getElementById("email").value = datos.email;
+            } else {
+                alert("No se encontraron datos para el nombre proporcionado.");
+            }
+        }
+
+        function eliminarDato() {
+            var nombre = document.getElementById("nombre").value;
+
+            localStorage.removeItem(nombre);
+
+            actualizarDatos();
+        }
+
+        function eliminarTodo() {
+            localStorage.clear();
+
+            actualizarDatos();
+        }
+
+        function actualizarDatos() {
+            var elementos = "";
+
+            if (localStorage.length === 0) {
+                elementos += '<div class="panel panel-default"><div class="panel-body">Vacío</div></div>';
+            } else {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    var datos = JSON.parse(localStorage.getItem(key));
+
+                    elementos += '<div class="panel panel-default"><div class="panel-body">';
+                    elementos += '<div class="col-xs-3">';
+                    elementos += '<img src="' + datos.avatarURL + '">';
+                    elementos += '</div><div class="col-xs-9">';
+                    elementos += '<p><b>' + key + '</b></p>';
+                    elementos += '<a href="tel:+34' + datos.movil + '"><p><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> ' + datos.movil + '</p></a>';
+                    elementos += '<a href="mailto:' + datos.email + '"><p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> ' + datos.email + '</p></a>';
+                    elementos += '</div></div></div>';
+                }
+            }
+
+            document.getElementById('contactos').innerHTML = elementos;
+        }
+    </script>
+</body>
+
+</html>
